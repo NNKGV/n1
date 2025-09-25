@@ -30,12 +30,15 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 });
 
 function renderTable(data) {
+  // Sắp xếp toàn bộ danh sách theo điểm giảm dần
   let sorted = [...data].sort((a, b) => b.score - a.score);
+
+  // Lấy top 30 để export Excel
   top30Data = sorted.slice(0, 30);
 
-  let result = "<h3>Top 30 học sinh điểm cao nhất</h3>";
+  let result = "<h3>Danh sách học sinh (sắp xếp theo điểm)</h3>";
   result += "<table><tr><th>STT</th><th>Tên</th><th>Điểm</th></tr>";
-  top30Data.forEach((s, i) => {
+  sorted.forEach((s, i) => {
     result += `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.score}</td></tr>`;
   });
   result += "</table>";
@@ -48,7 +51,6 @@ function filterTable() {
   renderTable(filtered);
 }
 
-// 👉 Hàm xuất file Excel Top 30
 function exportExcel() {
   if (top30Data.length === 0) {
     alert("Chưa có dữ liệu để xuất!");
