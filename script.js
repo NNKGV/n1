@@ -10,12 +10,13 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
     let firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
     students = XLSX.utils.sheet_to_json(firstSheet, { header: 1 })
-                .slice(1) // bỏ dòng tiêu đề
-                .map((row, i) => ({
-                  stt: i + 1,
-                  name: row[1] || "",  // Cột 1: Họ và tên
-                  score: row[2] || ""  // Cột 2: Điểm
-                }));
+            .slice(1) // bỏ dòng tiêu đề
+            .map((row, i) => ({
+              stt: i + 1,
+              name: row[1] || "",  // Cột B = Họ và tên
+              score: row[2] || ""  // Cột C = Điểm
+            }));
+
     renderTable(students);
   };
   reader.readAsArrayBuffer(file);
