@@ -3,8 +3,9 @@ let students = [];
 // Đọc file Excel
 document.getElementById("fileInput").addEventListener("change", function(e) {
   let file = e.target.files[0];
-  let reader = new FileReader();
+  if (!file) return;
 
+  let reader = new FileReader();
   reader.onload = function(e) {
     let data = new Uint8Array(e.target.result);
     let workbook = XLSX.read(data, { type: "array" });
@@ -25,7 +26,6 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 
     renderTable(students);
   };
-
   reader.readAsArrayBuffer(file);
 });
 
@@ -34,18 +34,18 @@ function renderTable(data) {
   let sorted = [...data].sort((a, b) => b.score - a.score);
   sorted = sorted.slice(0, 30); // chỉ lấy top 30
 
-  let result = "<h3>Top 30 học sinh</h3>";
-  result += "<table><tr><th>STT</th><th>Tên</th><th>Điểm</th></tr>";
+  let tbody = document.querySelector("#studentTable tbody");
+  tbody.innerHTML = "";
   sorted.forEach((s, i) => {
-    result += `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.score}</td></tr>`;
+    let tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i + 1}</td><td>${s.name}</td><td>${s.score}</td>`;
+    tbody.appendChild(tr);
   });
-  result += "</table>";
-  document.getElementById("result").innerHTML = result;
 }
 
 // Lọc theo tên
 function filterTable() {
-  const keyword = document.getElementById("search").value.toLowerCase();
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
   const filtered = students.filter(s => s.name.toLowerCase().includes(keyword));
   renderTable(filtered);
 }
@@ -71,3 +71,7 @@ function exportFile() {
 
   XLSX.writeFile(workbook, "Top30HocSinh.xlsx");
 }
+
+// Gắn sự kiện
+document.getElementById("exportBtn").addEventListener("click", exportFile);
+document.getElementById("searchInput").addEventListener("input", filterTable);
