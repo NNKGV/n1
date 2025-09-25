@@ -1,6 +1,14 @@
+<input type="file" id="fileInput" />
+<input type="text" id="search" placeholder="Tìm kiếm theo tên..." onkeyup="filterTable()" />
+<button onclick="exportExcel()">Xuất Top 30</button>
+<div id="result"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
 let students = [];
 let top30Data = [];
 
+// Đọc file Excel
 document.getElementById("fileInput").addEventListener("change", function(e) {
   let file = e.target.files[0];
   let reader = new FileReader();
@@ -15,11 +23,11 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 
     students = [];
 
-    // Giả sử Excel có dạng: STT | Tên | Điểm
+    // Excel có dạng: STT | Điểm | Tên
     for (let i = 1; i < rows.length; i++) {
       let row = rows[i];
       if (row[1] && row[2]) {
-        students.push({ name: row[1], score: Number(row[2]) });
+        students.push({ score: Number(row[1]), name: row[2] });
       }
     }
 
@@ -29,35 +37,45 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
   reader.readAsArrayBuffer(file);
 });
 
+// Hiển thị bảng
 function renderTable(data) {
-  // Sắp xếp toàn bộ danh sách theo điểm giảm dần
+  // Sắp xếp theo điểm giảm dần
   let sorted = [...data].sort((a, b) => b.score - a.score);
 
-  // Lấy top 30 để export Excel
+  // Lấy top 30 để export
   top30Data = sorted.slice(0, 30);
 
   let result = "<h3>Danh sách học sinh (sắp xếp theo điểm)</h3>";
-  result += "<table><tr><th>STT</th><th>Tên</th><th>Điểm</th></tr>";
+  result += "<table border='1' cellspacing='0' cellpadding='5'>";
+  result += "<tr><th>STT</th><th>Tên</th><th>Điểm</th></tr>";
+
   sorted.forEach((s, i) => {
-    result += `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.score}</td></tr>`;
+    result += `<tr>
+      <td>${i+1}</td>
+      <td>${s.name}</td>
+      <td>${s.score}</td>
+    </tr>`;
   });
+
   result += "</table>";
   document.getElementById("result").innerHTML = result;
 }
 
+// Tìm kiếm theo tên
 function filterTable() {
   const keyword = document.getElementById("search").value.toLowerCase();
   const filtered = students.filter(s => s.name.toLowerCase().includes(keyword));
   renderTable(filtered);
 }
 
+// Xuất file Excel top 30
 function exportExcel() {
   if (top30Data.length === 0) {
     alert("Chưa có dữ liệu để xuất!");
     return;
   }
 
-  // Chuẩn bị dữ liệu với STT
+  // Chuẩn bị dữ liệu xuất
   const exportData = top30Data.map((s, i) => ({
     STT: i + 1,
     Tên: s.name,
@@ -72,3 +90,4 @@ function exportExcel() {
   // Xuất file Excel
   XLSX.writeFile(wb, "Top30HocSinh.xlsx");
 }
+</script>
