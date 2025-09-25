@@ -13,8 +13,8 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
                 .slice(1) // bỏ dòng tiêu đề
                 .map((row, i) => ({
                   stt: i + 1,
-                  name: row[0] || "",  // Cột 1: Họ và tên
-                  score: row[1] || ""  // Cột 2: Điểm
+                  name: row[1] || "",  // Cột 1: Họ và tên
+                  score: row[2] || ""  // Cột 2: Điểm
                 }));
     renderTable(students);
   };
